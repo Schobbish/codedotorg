@@ -43,7 +43,7 @@ var numberOfCards = 0;
 
 /**
  * Handles displaying cards on the cards screen
- * The screen can show a max of 10 cards at a time
+ * The screen can show a max of 11 cards at a time
  * @param {number} start index of first card to display
  * @param {number} end index of last card to display
  */
@@ -51,7 +51,6 @@ function showCards(start, end) {
     setScreen("cards");
     // delete cards on screen
     for (var i = 0; i < numberOfCards; i++) {
-        deleteElement("cards_id" + i);
         deleteElement("cards_term" + i);
         deleteElement("cards_edit" + i);
         deleteElement("cards_del" + i);
@@ -64,14 +63,10 @@ function showCards(start, end) {
     for (var i = start; i < lastCard; i++) {
         numberOfCards++;
         var y = i * 25 + 50;
-        var idID = "cards_id" + i;
-        textLabel(idID, i);
-        setStyle(idID, "margin: 0px; line-height: 1; font-family: Verdana, Geneva, sans-serif; font-size: 13px; padding: 2px 15px; width: 51px; position: absolute; left: 20px; text-align: center; height: 20px;");
-        setProperty(idID, "y", y);
 
         var termID = "cards_term" + i;
         textLabel(termID, cards[i].term);
-        setStyle(termID, "margin: 0px; line-height: 1; font-family: Verdana, Geneva, sans-serif; font-size: 13px; padding: 2px 15px; height: 20px; position: absolute; left: 75px; text-align: left; width: 180px;;");
+        setStyle(termID, "margin: 0px; line-height: 1; font-family: Verdana, Geneva, sans-serif; font-size: 13px; padding: 2px 15px; height: 20px; position: absolute; left: 20px; text-align: left; width: 235px;");
         setProperty(termID, "y", y);
 
         var editID = "cards_edit" + i;
@@ -90,12 +85,12 @@ function showCards(start, end) {
         onEvent(delID, "click", function (event) {
             console.log("delete card " + event.targetId.slice(9));
             cards.splice(event.targetId.slice(9), 1);
-            showCards(0, 10);
+            showCards(0, 9);
         });
     }
 
     // update the "showing" text
-    setText("cards_t_showing", "showing " + start + "-" + (lastCard - 1));
+    setText("cards_t_showing", "showing " + (start+1) + " to " + lastCard + " of " + cards.length + " cards");
 }
 
 // welcome screen
@@ -114,5 +109,5 @@ onEvent("create_b_done", "click", function () {
         def: getText("create_a_def")
     });
 
-    showCards(0, 10);
+    showCards(0, 9);
 });
