@@ -53,6 +53,14 @@ var currentQuizCard;
 /** cards allowed per page @constant @default 10 */
 var cardsPerPage = 10;
 
+// quiz scores
+var correctFirstTry = 0;
+var totalCorrect = 0;
+var skippedCards = 0;
+var unknownCards = 0;
+/** whether it is the first try for this question */
+var firstTry = true;
+
 /** default entry for the term field */
 var defaultTerm = "Enter term...";
 /** default entry for the definition field */
@@ -179,6 +187,13 @@ function checkAnswer() {
         setScreen("right");
     } else {
         setScreen("wrong");
+        // reset screen
+        hideElement("wrong_a_ans");
+        setText("wrong_a_ans", quizOrder[currentQuizCard].term);
+        showElement("wrong_b_reveal");
+        showElement("wrong_b_skip");
+        showElement("wrong_b_retry");
+        hideElement("wrong_b_next");
     }
 }
 
@@ -186,11 +201,15 @@ function checkAnswer() {
 function nextQuestion() {
     // check if last card
     if (currentQuizCard >= quizOrder.length - 1) {
-        // todo use finish screen instead
-        setScreen("cards");
-        showCards(0, cardsPerPage - 1);
+        setScreen("finish");
+        setText("finish_t_firstTry", "Correct answers (first try): " + correctFirstTry);
+        setText("finish_t_totalCorrect", "Total correct answers: " + totalCorrect);
+        setText("finish_t_skipped", "Skipped cards: " + skippedCards);
+        setText("finish_t_unknown", "Unknown answers: " + unknownCards);
+        setText("finish_t_total", "Total cards: " + quizOrder.length);
     } else {
         currentQuizCard++;
+        firstTry = true;
         showQuestion();
     }
 }
@@ -249,27 +268,52 @@ onEvent("cards_b_newCard", "click", function () {
 });
 // delete all cards
 onEvent("cards_b_delAll", "click", function () {
-    // todo add are you sure screen
-    setScreen("welcome");
-    cards = [];
+    setScreen("del");
 });
 // start quiz
 onEvent("cards_b_quiz", "click", function () {
     quizOrder = shuffle(cards.slice(0));
     currentQuizCard = 0;
+    correctFirstTry = 0;
+    totalCorrect = 0;
+    skippedCards = 0;
+    unknownCards = 0;
     showQuestion();
 });
 // back one page of cards
 onEvent("cards_i_back", "click", function () {
+    // only if the first card which would get displayed is gt 0
     if (firstCardDisplayed - cardsPerPage >= 0) {
         showCards(firstCardDisplayed - cardsPerPage, firstCardDisplayed - 1);
     }
 });
 // next page of cards
 onEvent("cards_i_next", "click", function () {
+    // only if the last card displayed is less than the number of cards
     if (lastCardDisplayed < cards.length - 1) {
         showCards(lastCardDisplayed + 1, lastCardDisplayed + cardsPerPage);
     }
+});
+
+/**
+ * delete screen
+ */
+// mouse over del, show red background
+onEvent("del_b_del", "mouseover", function () {
+    setProperty("del", "background-color", "#ff0000");
+});
+// mouse off del, show black background
+onEvent("del_t_catch", "mouseover", function () {
+    setProperty("del", "background-color", "#000000");
+});
+// delete call cards
+onEvent("del_b_del", "click", function () {
+    setScreen("welcome");
+    cards = [];
+});
+// go back to previous screen
+onEvent("del_b_cancel", "click", function () {
+    showCards(firstCardDisplayed, lastCardDisplayed);
 });
 
 /**
@@ -285,18 +329,78 @@ onEvent("quiz_a_ans", "keydown", function (event) {
 });
 // quit quiz
 onEvent("quiz_b_quit", "click", function () {
-    // todo add are you sure screen
+    setScreen("quit");
+});
+
+/**
+ * quit screen
+ */
+// mouse over quit, show red background
+onEvent("quit_b_quit", "mouseover", function () {
+    setProperty("quit", "background-color", "#ff0000");
+});
+// mouse off quit, show black background
+onEvent("quit_t_catch", "mouseover", function () {
+    setProperty("quit", "background-color", "#000000");
+});
+// quit to the cards screen
+onEvent("quit_b_quit", "click", function () {
     showCards(0, cardsPerPage - 1);
 });
+// go back to the question
+onEvent("quit_b_cancel", "click", showQuestion);
 
 /**
  * right screen
  */
 // advance to next question
-onEvent("right_b_next", "click", nextQuestion);
+onEvent("right_b_next", "click", function () {
+    totalCorrect++;
+    if (firstTry) {
+        correctFirstTry++;
+    }
+    nextQuestion();
+});
 // can also press enter!
 onEvent("right", "keydown", function (event) {
     if (event.key === "Enter") {
+        totalCorrect++;
+        if (firstTry) {
+            correctFirstTry++;
+        }
         nextQuestion();
     }
+});
+
+/**
+ * wrong screen
+ */
+// reveal answer and change buttons
+onEvent("wrong_b_reveal", "click", function () {
+    unknownCards++;
+    showElement("wrong_a_ans");
+    hideElement("wrong_b_reveal");
+    hideElement("wrong_b_skip");
+    hideElement("wrong_b_retry");
+    showElement("wrong_b_next");
+});
+// skip card
+onEvent("wrong_b_skip", "click", function () {
+    skippedCards++;
+    nextQuestion();
+});
+// retry card
+onEvent("wrong_b_retry", "click", function () {
+    firstTry = false;
+    showQuestion();
+});
+// advance to next question
+onEvent("wrong_b_next", "click", nextQuestion);
+
+/**
+ * finish screen
+ */
+// go back to cards screen
+onEvent("finish_b_quit", "click", function () {
+    showCards(0, cardsPerPage - 1);
 });
