@@ -2,7 +2,8 @@ speed(100);
 
 /**
  * list of cards
- * @example can import using CSV: https://quizlet.com/305600676/ap-chemistry-polyatomic-ions-flash-cards/
+ * @example can import using CSV:
+ *  https://quizlet.com/305600676/ap-chemistry-polyatomic-ions-flash-cards/
  */
 var cards = [
     {
