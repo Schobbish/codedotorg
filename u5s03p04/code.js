@@ -1,40 +1,19 @@
 speed(100);
 
-/** list of cards */
+/**
+ * list of cards
+ * @example can import using CSV: https://quizlet.com/305600676/ap-chemistry-polyatomic-ions-flash-cards/
+ */
 var cards = [
     {
-        term: "example",
-        def: "a thing characteristic of its kind or illustrating a general rule"
+        term: "Term 1",
+        def: "Definition 1"
     }, {
-        term: "one",
-        def: "the first cardinal number"
+        term: "Term 2",
+        def: "Definition 2"
     }, {
-        term: "two",
-        def: "number after one"
-    }, {
-        term: "three",
-        def: "number after two"
-    }, {
-        term: "four",
-        def: "number after three"
-    }, {
-        term: "five",
-        def: "number after four"
-    }, {
-        term: "six",
-        def: "number after five"
-    }, {
-        term: "seven",
-        def: "number after six"
-    }, {
-        term: "eight",
-        def: "number after seven"
-    }, {
-        term: "nine",
-        def: "number after eight"
-    }, {
-        term: "ten",
-        def: "number after nine"
+        term: "Term 3",
+        def: "Definition 3"
     }
 ];
 
@@ -89,6 +68,22 @@ function shuffle(array) {
     return array;
 }
 
+/** Puts CSV in the box and stuff and shows the csv screen */
+function showCSV() {
+    var csv = "";
+    for (var i = 0; i < cards.length; i++) {
+        csv += cards[i].term;
+        csv += ",";
+        csv += cards[i].def;
+        csv += "\n";
+    }
+    // trim off trailing newline
+    csv = csv.slice(0, -1);
+    setScreen("csv");
+    setText("csv_t_title", "View/edit CSV");
+    setText("csv_a_cards", csv);
+}
+
 /**
  * Handles displaying cards on the cards screen
  * The screen can show a max of 11 cards at a time
@@ -113,28 +108,27 @@ function showCards(start, end) {
     // add new cards
     for (var i = start; i < lastCard; i++) {
         cardsDisplayed.push(i);
-        var y = (i - firstCardDisplayed) * 25 + 50;
+        var y = (i - firstCardDisplayed) * 25 + 54;
 
         var termID = "cards_term" + i;
         textLabel(termID, cards[i].term);
-        setStyle(termID, "margin: 0px; line-height: 1; font-family: Verdana, Geneva, sans-serif; font-size: 13px; padding: 2px 15px; height: 20px; position: absolute; left: 20px; text-align: left; width: 235px;");
+        setStyle(termID, "margin: 0px; line-height: 1; overflow: hidden; font-family: Verdana, Geneva, sans-serif; font-size: 12px; padding: 2px 15px 0px 15px; height: 17px; position: absolute; left: 20px; text-align: left; width: 235px;");
         setProperty(termID, "y", y);
 
         var editID = "cards_edit" + i;
         image(editID, "icon://fa-pencil-square-o");
         setStyle(editID, "height: 20px; width: 20px; position: absolute; left: 260px; margin: 0px; object-fit: contain;");
         setProperty(editID, "icon-color", "#4d575f");
-        setProperty(editID, "y", y);
+        setProperty(editID, "y", y - 1);
 
         var delID = "cards_del" + i;
         image(delID, "icon://fa-trash-o");
         setStyle(delID, "height: 20px; width: 20px; position: absolute; left: 280px; margin: 0px; object-fit: contain;");
         setProperty(delID, "icon-color", "#4d575f");
-        setProperty(delID, "y", y);
+        setProperty(delID, "y", y - 1);
 
         // add event listener for the delete button
         onEvent(delID, "click", function (event) {
-            console.log("delete card " + event.targetId.slice(9));
             cards.splice(event.targetId.slice(9), 1);
             showCards(0, cardsPerPage - 1);
         });
@@ -181,15 +175,15 @@ function showQuestion() {
 
 /** Check answer of current quiz card and show the right/wrong screen. */
 function checkAnswer() {
-    var ans = getText("quiz_a_ans");
+    var ans = getText("quiz_a_ans").trim().toLowerCase();
     setText("quiz_a_ans", "");
-    if (quizOrder[currentQuizCard].term === ans) {
+    if (quizOrder[currentQuizCard].term.trim().toLowerCase() === ans) {
         setScreen("right");
     } else {
         setScreen("wrong");
         // reset screen
-        hideElement("wrong_a_ans");
-        setText("wrong_a_ans", quizOrder[currentQuizCard].term);
+        hideElement("wrong_t_ans");
+        setText("wrong_t_ans", quizOrder[currentQuizCard].term);
         showElement("wrong_b_reveal");
         showElement("wrong_b_skip");
         showElement("wrong_b_retry");
@@ -214,16 +208,50 @@ function nextQuestion() {
     }
 }
 
+
 /**
  * welcome screen
  */
 onEvent("welcome_b_newCard", "click", function () {
-    // initialize card list
-    // cards = [];
-
+    // remove cards
+    cards = [];
     editCard();
 });
+onEvent("welcome_b_csv", "click", function () {
+    showCSV();
+    setText("csv_t_title", "Import CSV");
+});
 
+/**
+ * csv screen
+ */
+// discard any changes and go to cards screen
+onEvent("csv_b_cancel", "click", function () {
+    showCards(0, cardsPerPage - 1);
+});
+// parse csv into cards
+onEvent("csv_b_save", "click", function () {
+    var csv = getText("csv_a_cards");
+    var lines = csv.split("\n");
+    cards = [];
+
+    for (var i = 0; i < lines.length; i++) {
+        // skip if empty line
+        if (lines[i] != "") {
+            // fancy regex that I can't use bc not enough support: /(?<!\\),/
+            var cardComponents = lines[i].split(",");
+            // make sure cardComponents has at least 2 items so no undefined stuff
+            for (var j = cardComponents.length; j < 2; j++) {
+                cardComponents.push("");
+            }
+            cards.push({
+                term: cardComponents[0],
+                def: cardComponents.slice(1).join(",")
+            });
+        }
+    }
+    showCards(0, cardsPerPage - 1);
+});
 
 /**
  * create screen
@@ -266,9 +294,9 @@ onEvent("cards_b_newCard", "click", function () {
     // make sure event is not passed to editCard
     editCard();
 });
-// delete all cards
-onEvent("cards_b_delAll", "click", function () {
-    setScreen("del");
+// option screen
+onEvent("cards_b_opt", "click", function () {
+    setScreen("opt");
 });
 // start quiz
 onEvent("cards_b_quiz", "click", function () {
@@ -294,6 +322,47 @@ onEvent("cards_i_next", "click", function () {
         showCards(lastCardDisplayed + 1, lastCardDisplayed + cardsPerPage);
     }
 });
+
+/**
+ * options screen
+ */
+// sort cards
+onEvent("opt_b_sort", "click", function () {
+    // taken from an example on the MDN web docs for Array.prototype.sort()
+    cards.sort(function (a, b) {
+        var termA = a.term.toUpperCase(); // ignore upper and lowercase
+        var termB = b.term.toUpperCase(); // ignore upper and lowercase
+        if (termA < termB) {
+            return -1;
+        }
+        if (termA > termB) {
+            return 1;
+        }
+
+        // terms must be equal
+        return 0;
+    });
+    showCards(0, cardsPerPage - 1);
+});
+// swap cards
+onEvent("opt_b_swap", "click", function () {
+    for (var i = 0; i < cards.length; i++) {
+        var tempDef = cards[i].def;
+        cards[i].def = cards[i].term;
+        cards[i].term = tempDef;
+    }
+    showCards(0, cardsPerPage - 1);
+});
+// view csv
+onEvent("opt_b_csv", "click", showCSV);
+// delete all
+onEvent("opt_b_delAll", "click", function () {
+    setScreen("del");
+});
+// go back
+onEvent("opt_b_back", "click", function () {
+    showCards(0, cardsPerPage - 1);
+})
 
 /**
  * delete screen
@@ -378,7 +447,7 @@ onEvent("right", "keydown", function (event) {
 // reveal answer and change buttons
 onEvent("wrong_b_reveal", "click", function () {
     unknownCards++;
-    showElement("wrong_a_ans");
+    showElement("wrong_t_ans");
     hideElement("wrong_b_reveal");
     hideElement("wrong_b_skip");
     hideElement("wrong_b_retry");
@@ -401,6 +470,6 @@ onEvent("wrong_b_next", "click", nextQuestion);
  * finish screen
  */
 // go back to cards screen
-onEvent("finish_b_quit", "click", function () {
+onEvent("finish_b_exit", "click", function () {
     showCards(0, cardsPerPage - 1);
 });
