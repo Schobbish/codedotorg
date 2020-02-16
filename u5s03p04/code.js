@@ -113,7 +113,7 @@ function showCards(start, end) {
 
         var termID = "cards_term" + i;
         textLabel(termID, cards[i].term);
-        setStyle(termID, "margin: 0px; line-height: 1; overflow: hidden; font-family: Verdana, Geneva, sans-serif; font-size: 12px; padding: 2px 15px 0px 15px; height: 17px; position: absolute; left: 20px; text-align: left; width: 235px;");
+        setStyle(termID, "margin: 0px; line-height: 1; overflow: hidden; font-family: Verdana, Geneva, sans-serif; font-size: 12px; padding: 2px 15px 0px 15px; height: 15px; position: absolute; left: 20px; text-align: left; width: 235px;");
         setProperty(termID, "y", y);
 
         var editID = "cards_edit" + i;
@@ -172,6 +172,7 @@ function editCard(i) {
 function showQuestion() {
     setScreen("quiz");
     setText("quiz_a_def", quizOrder[currentQuizCard].def);
+    setText("quiz_t_progress", (currentQuizCard + 1) + "/" + quizOrder.length)
 }
 
 /** Check answer of current quiz card and show the right/wrong screen. */
@@ -197,10 +198,10 @@ function nextQuestion() {
     // check if last card
     if (currentQuizCard >= quizOrder.length - 1) {
         setScreen("finish");
-        setText("finish_t_firstTry", "Correct answers (first try): " + correctFirstTry);
-        setText("finish_t_totalCorrect", "Total correct answers: " + totalCorrect);
-        setText("finish_t_skipped", "Skipped cards: " + skippedCards);
-        setText("finish_t_unknown", "Unknown answers: " + unknownCards);
+        setText("finish_t_firstTry", "Correct answers (first try): " + correctFirstTry + " (" + (Math.round(correctFirstTry * 100 / quizOrder.length)) + "%)");
+        setText("finish_t_totalCorrect", "Total correct answers: " + totalCorrect + " (" + (Math.round(totalCorrect * 100 / quizOrder.length)) + "%)");
+        setText("finish_t_skipped", "Skipped cards: " + skippedCards + " (" + (Math.round(skippedCards * 100 / quizOrder.length)) + "%)");
+        setText("finish_t_unknown", "Unknown answers: " + unknownCards + " (" + (Math.round(unknownCards * 100 / quizOrder.length)) + "%)");
         setText("finish_t_total", "Total cards: " + quizOrder.length);
     } else {
         currentQuizCard++;
