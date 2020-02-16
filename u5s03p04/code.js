@@ -18,6 +18,8 @@ var cards = [
     }
 ];
 
+/** cards allowed per page @constant @default 10 */
+var cardsPerPage = 10;
 /** indicies of cards on the cards screen */
 var cardsDisplayed = [];
 /** index of first card displayed */
@@ -30,8 +32,6 @@ var editingCard;
 var quizOrder = [];
 /** index of card being quizzed on */
 var currentQuizCard;
-/** cards allowed per page @constant @default 10 */
-var cardsPerPage = 10;
 
 // quiz scores
 var correctFirstTry = 0;
@@ -41,9 +41,9 @@ var unknownCards = 0;
 /** whether it is the first try for this question */
 var firstTry = true;
 
-/** default entry for the term field */
+/** default entry for the term field @constant */
 var defaultTerm = "Enter term...";
-/** default entry for the definition field */
+/** default entry for the definition field @constant */
 var defaultDef = "Enter definition...";
 
 /**
@@ -363,7 +363,7 @@ onEvent("opt_b_delAll", "click", function () {
 });
 // go back
 onEvent("opt_b_back", "click", function () {
-    showCards(0, cardsPerPage - 1);
+    showCards(firstCardDisplayed, lastCardDisplayed);
 })
 
 /**
@@ -384,7 +384,7 @@ onEvent("del_b_del", "click", function () {
 });
 // go back to previous screen
 onEvent("del_b_cancel", "click", function () {
-    showCards(firstCardDisplayed, lastCardDisplayed);
+    setScreen("opt")
 });
 
 /**
