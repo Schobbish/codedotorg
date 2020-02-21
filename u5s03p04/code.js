@@ -23,9 +23,9 @@ var cardsPerPage = 10;
 /** indicies of cards on the cards screen */
 var cardsDisplayed = [];
 /** index of first card displayed */
-var firstCardDisplayed;
+var firstCardDisplayed = 0;
 /** index of last card displayed */
-var lastCardDisplayed;
+var lastCardDisplayed = cardsPerPage - 1;
 /** index of card being edited */
 var editingCard;
 /** cards but shuffled for quiz */
@@ -170,9 +170,11 @@ function editCard(i) {
 
 /** Shows the question based on the value of currentQuizCard. */
 function showQuestion() {
+    stopSound("clap.mp3");
+    stopSound("boo.mp3");
     setScreen("quiz");
     setText("quiz_a_def", quizOrder[currentQuizCard].def);
-    setText("quiz_t_progress", (currentQuizCard + 1) + "/" + quizOrder.length)
+    setText("quiz_t_progress", (currentQuizCard + 1) + "/" + quizOrder.length);
 }
 
 /** Check answer of current quiz card and show the right/wrong screen. */
@@ -180,8 +182,10 @@ function checkAnswer() {
     var ans = getText("quiz_a_ans").trim().toLowerCase();
     setText("quiz_a_ans", "");
     if (quizOrder[currentQuizCard].term.trim().toLowerCase() === ans) {
+        playSound("clap.mp3");
         setScreen("right");
     } else {
+        playSound("boo.mp3");
         setScreen("wrong");
         // reset screen
         hideElement("wrong_t_ans");
@@ -269,6 +273,10 @@ onEvent("create_a_def", "click", function () {
     if (getText("create_a_def") === defaultDef) {
         setText("create_a_def", "");
     }
+});
+// cancel edit
+onEvent("create_b_cancel", "click", function () {
+    showCards(firstCardDisplayed, lastCardDisplayed);
 });
 // save card
 onEvent("create_b_done", "click", function () {
@@ -364,7 +372,7 @@ onEvent("opt_b_delAll", "click", function () {
 // go back
 onEvent("opt_b_back", "click", function () {
     showCards(firstCardDisplayed, lastCardDisplayed);
-})
+});
 
 /**
  * delete screen
@@ -384,7 +392,7 @@ onEvent("del_b_del", "click", function () {
 });
 // go back to previous screen
 onEvent("del_b_cancel", "click", function () {
-    setScreen("opt")
+    setScreen("opt");
 });
 
 /**
