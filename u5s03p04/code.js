@@ -170,8 +170,8 @@ function editCard(i) {
 
 /** Shows the question based on the value of currentQuizCard. */
 function showQuestion() {
-    stopSound("clap.mp3");
-    stopSound("boo.mp3");
+    stopSound("assets/clap.mp3");
+    stopSound("assets/boo.mp3");
     setScreen("quiz");
     setText("quiz_a_def", quizOrder[currentQuizCard].def);
     setText("quiz_t_progress", (currentQuizCard + 1) + "/" + quizOrder.length);
@@ -182,10 +182,10 @@ function checkAnswer() {
     var ans = getText("quiz_a_ans").trim().toLowerCase();
     setText("quiz_a_ans", "");
     if (quizOrder[currentQuizCard].term.trim().toLowerCase() === ans) {
-        playSound("clap.mp3");
+        playSound("assets/clap.mp3");
         setScreen("right");
     } else {
-        playSound("boo.mp3");
+        playSound("assets/boo.mp3");
         setScreen("wrong");
         // reset screen
         hideElement("wrong_t_ans");
