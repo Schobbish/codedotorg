@@ -1,37 +1,37 @@
 {
     "u3s06p03": {
         "name": "u3s06p03 big grid",
-        "modified": "2019-11-08 14:37 ",
+        "modified": "2019-11-08T22:37:14Z",
         "size": "6.0M"
     },
     "u3s07p10": {
         "name": "u3s07p10 minesweeper 1",
-        "modified": "2019-11-13 21:31 ",
+        "modified": "2019-11-14T05:31:42Z",
         "size": "6.0M"
     },
     "u3s09p14": {
         "name": "u3s09p14 minesweeper 2",
-        "modified": "2019-11-20 15:03 ",
+        "modified": "2019-11-20T23:03:02Z",
         "size": "6.0M"
     },
     "u3s10p04": {
         "name": "u3s10p04 lit christmas",
-        "modified": "2019-12-14 21:40 ",
+        "modified": "2019-12-15T05:40:44Z",
         "size": "6.0M"
     },
     "u5s02p15": {
         "name": "u5s02p15 chaser game",
-        "modified": "2020-02-12 14:16 ",
-        "size": "12M"
+        "modified": "2020-02-12T22:16:16Z",
+        "size": "12M "
     },
     "u5s03p04": {
         "name": "u5s03p04 flash card app",
-        "modified": "2020-02-20 14:26 ",
+        "modified": "2020-02-20T22:26:31Z",
         "size": "6.8M"
     },
     "u5s05p21": {
         "name": "u5s05p21 click mr. george",
-        "modified": "2020-02-25 15:00:04",
+        "modified": "2020-02-25T23:00:04Z",
         "size": "6.2M"
     }
 }
