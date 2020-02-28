@@ -19,11 +19,23 @@ onEvent("start_button", "click", function() {
   setText("number_lives", lives);
   setScreen("game_screen");
   moveGeorge();
+  
+  // set up timer
+  var endTime = new Date(new Date().getTime() + 4000);
+  timedLoop(9, function() {
+    var timeLeft = endTime.getTime() - (new Date()).getTime();
+    setText("time_left", timeLeft / 1000 + " s");
+    if(timeLeft <= 0) {
+      stopTimedLoop();
+      setScreen("lose_screen");
+    }
+  });
 });
 onEvent("overlay", "click", function() {
   score++;
   setText("total_score", score);
   if(score >= 4) {
+    stopTimedLoop();
     setScreen("win_screen");
   }
   moveGeorge();
