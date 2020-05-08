@@ -2,6 +2,7 @@ var code;
 var lines;
 var currentLine = 0;
 var names = {};
+var continueRunningCode = true;
 var verbose = false;
 var builtins = {
     "moveForward": moveForward,
@@ -42,13 +43,13 @@ var builtins = {
     // no do while!!!!!!!!!!
     "else": invalidElse,
     "end": invalidEnd,
-    "verbose": verbose,
+    "verbose": toggleVerbosity,
 };
 
 function validateName(name) {
     if (name === null) return true;
     if (!isNaN(name) || name === undefined) {
-        console.log("Error: invalid name " + name);
+        echo("Error: invalid name " + name);
         exit(1);
         return false;
     } else {
@@ -74,15 +75,15 @@ function readLine(line) {
             cmd[word] = cmd[word].slice(1);
         }
     }
-    if (verbose) console.log("        run " + cmd.join(" ") + " #" + currentLine);
+    if (verbose) echo("        run " + cmd.join(" ") + " #" + currentLine);
     // run command
-    if (!runCode) {
+    if (!continueRunningCode) {
         return false;
     } else if (builtins[cmd[0]]) {
         builtins[cmd[0]].apply(null, cmd.slice(1));
         return true;
     } else {
-        console.log("Error: command not found: " + cmd[0] + " on line " + currentLine);
+        echo("Error: command not found: " + cmd[0] + " on line " + currentLine);
         exit(127);
         return false;
     }
@@ -93,8 +94,7 @@ function blockLineReader() {
     var nest = 0;
     while (true) {
         var line = lines[currentLine];
-        if (verbose) console.log("            read " + line + " #" + currentLine);
-        // console.log([line, nest])
+        if (verbose) echo("            read " + line + " #" + currentLine);
         var firstWord = line.split(" ")[0];
         currentLine++;
         if (firstWord === "end") {
@@ -108,7 +108,7 @@ function blockLineReader() {
             nest++;
             block.push(line);
         } else if (firstWord === "EOF") {
-            console.log("Error: unexpected EOF");
+            echo("Error: unexpected EOF");
             exit(1);
             break;
         } else {
@@ -118,10 +118,9 @@ function blockLineReader() {
     return block;
 }
 
-var runCode = true;
 function exit(code) {
-    if (code) console.log(code);
-    runCode = false;
+    if (code) echo(code);
+    continueRunningCode = false;
 }
 
 var delay = 1;
@@ -148,7 +147,7 @@ function randVar(name, equals, low, high) {
 function echo() {
     // https://stackoverflow.com/a/6396066 alt for ...args
     var args = Array.prototype.slice.call(arguments, 0);
-    console.log(args.join(" "));
+    setText("console_area", getText("console_area") + args.join(" ") + "\n");
 }
 
 function comment() {
@@ -186,11 +185,10 @@ function compute(name, equals, a, op, b) {
             case ">>": ans = a >> b; break;
             case ">>>": ans = a >>> b; break;
             default:
-                console.log("Error: bad operator " + op + " on line " + currentLine);
+                echo("Error: bad operator " + op + " on line " + currentLine);
                 exit(1);
                 break;
         }
-        // console.log([a, op, b, ans]);
         if (name) {
             names[name] = ans;
         } else {
@@ -209,7 +207,7 @@ function startIf(a, op, b) {
     var nest = 0;
     while (true) {
         var line = lines[currentLine];
-        if (verbose) console.log("            read " + line + " #" + currentLine);
+        if (verbose) echo("            read " + line + " #" + currentLine);
         var firstWord = line.split(" ")[0];
         currentLine++;
         if (firstWord === "end") {
@@ -226,7 +224,7 @@ function startIf(a, op, b) {
             nest++;
             statement.trueBlock.push(line);
         } else if (firstWord === "EOF") {
-            console.log("Error: unexpected EOF");
+            echo("Error: unexpected EOF");
             exit(1);
             break;
         } else {
@@ -253,7 +251,6 @@ function startFunction(name) {
 }
 
 function runFunction(name) {
-    // console.log(currentLine)
     var args = Array.prototype.slice.call(arguments, 0);
     if (names[name]) {
         for (var line = 0; line < names[name].length; line++) {
@@ -268,9 +265,8 @@ function runFunction(name) {
             }
             lines.splice(currentLine + line, 0, cmd.join(" "));
         }
-        // console.log(lines)
     } else {
-        console.log("Error: function not found: " + name + " on line " + currentLine);
+        echo("Error: function not found: " + name + " on line " + currentLine);
     }
 }
 
@@ -289,52 +285,39 @@ function startWhile(a, op, b) {
 }
 
 function invalidElse() {
-    console.log("Error: unexpected else on line " + currentLine);
+    echo("Error: unexpected else on line " + currentLine);
     exit(2);
 }
 
 function invalidEnd() {
-    console.log("Error: unexpected end on line " + currentLine);
+    echo("Error: unexpected end on line " + currentLine);
     exit(2);
 }
 
-function verbose() {
+function toggleVerbosity() {
     verbose = !verbose;
 }
 
 function loopyFunction() {
     var line = lines[currentLine];
     currentLine++;
-    if (readLine(line) && runCode) {
+    if (readLine(line) && continueRunningCode) {
         setTimeout(loopyFunction, delay);
     }
 }
 
-function tabSwitcher(event) {
-    setScreen(event.targetId.split("_")[3]);
-}
-
-// make tab bar buttons
-var screens = ["start", "code", "console", "turtle", "docs"];
-for (var location = 0; location < screens.length; location++) {
-    for (var destination = 0; destination < screens.length; destination++) {
-        // no buttons to start screen and no buttons to the same screen
-        if (screens[destination] !== "start" && screens[location] !== screens[destination])
-            onEvent(screens[location] + "_tabbar_b_" + screens[destination], "click", tabSwitcher);
-    }
-}
-
-onEvent("console_b_run", "click", function () {
-    if (verbose) console.log("    running code");
+function runCode() {
+    if (verbose) echo("    running code");
 
     // reset vars
-    code = getText("code") + "\nEOF";
+    code = getText("code_area") + "\nEOF";
     lines = code.split("\n");
     currentLine = 0;
     names = {};
-    runCode = true;
+    continueRunningCode = true;
     delay = 1;
     verbose = false;
+    setText("code_area", "");
 
     // reset turtle
     penDown();
@@ -346,4 +329,29 @@ onEvent("console_b_run", "click", function () {
     hide();
 
     setTimeout(loopyFunction, delay);
+}
+
+function tabSwitcher(event) {
+    setScreen(event.targetId.split("_")[3]);
+}
+
+// make tab bar buttons
+var screens = ["start", "code", "console", "turtle", "docs"];
+for (var current = 0; current < screens.length; current++) {
+    for (var destination = 0; destination < screens.length; destination++) {
+        // no buttons to start screen and no buttons to the same screen
+        if (screens[destination] !== "start" && screens[current] !== screens[destination])
+            onEvent(screens[current] + "_tabbar_b_" + screens[destination], "click", tabSwitcher);
+    }
+}
+
+onEvent("console_b_run", "click", function () {
+    // do some weird things to make sure the turtle works
+    // when console code is run first
+    setScreen("turtle");
+    show();
+    hide();
+    setScreen("console");
+    runCode();
 });
+onEvent("turtle_b_run", "click", runCode);
