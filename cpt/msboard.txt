@@ -1,0 +1,23 @@
+var size = 20
+var lightBeige = #e5c29f
+var darkBeige = #d7b899
+var lightGreen = #aad751
+var darkGreen = #a2d149
+var flagColor = #f23607
+var clue1 = #0c72d7
+var clue2 = #3a8f3d
+var clue3 = #d33a38
+var clue6 = #0096a7
+var currentRowLength = 0
+
+function msDot
+penColor $2
+dot $1
+if $# == 3
+penColor $3
+compute tmp1 = $1 / 4
+dot $tmp1
+end
+end
+
+run msDot $size $darkBeige $clue1

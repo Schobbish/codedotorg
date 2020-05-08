@@ -38,7 +38,7 @@ var builtins = {
     "if": startIf,
     "function": startFunction,
     "run": runFunction,
-    "for": startFor,
+    // "for": startFor, // TODO
     "while": startWhile,
     // no do while!!!!!!!!!!
     "else": invalidElse,
@@ -120,7 +120,12 @@ function blockLineReader() {
 
 function exit(code) {
     if (code) echo(code);
+    // stop code asap
     continueRunningCode = false;
+
+    // hide stop buttons
+    hideElement("console_b_stop");
+    hideElement("turtle_b_stop");
 }
 
 var delay = 1;
@@ -317,7 +322,7 @@ function runCode() {
     continueRunningCode = true;
     delay = 1;
     verbose = false;
-    setText("code_area", "");
+    setText("console_area", "");
 
     // reset turtle
     penDown();
@@ -328,10 +333,16 @@ function runCode() {
     penRGB(0, 0, 0, 1);
     hide();
 
+    // show stop buttons
+    showElement("console_b_stop");
+    showElement("turtle_b_stop");
+
+    // start the loop
     setTimeout(loopyFunction, delay);
 }
 
 function tabSwitcher(event) {
+    // exit();
     setScreen(event.targetId.split("_")[3]);
 }
 
@@ -355,3 +366,24 @@ onEvent("console_b_run", "click", function () {
     runCode();
 });
 onEvent("turtle_b_run", "click", runCode);
+
+onEvent("console_b_stop", "click", function () {
+    exit();
+});
+onEvent("turtle_b_stop", "click", function () {
+    exit();
+});
+
+// example codes
+onEvent("code_examples", "change", function () {
+    switch (getText("code_examples")) {
+        case "While FizzBuzz":
+            setText("code_area", "var i = 1\n\nfunction fizzBuzz\n\nwhile $i <= 100\ncompute mod3 = $i % 3\ncompute mod5 = $i % 5\ncompute mod15 = $i % 15\n\nif $mod15 !\necho FizzBuzz\nelse\nif $mod3 !\necho Fizz\nelse\nif $mod5 !\necho Buzz\nelse\necho $i\nend\nend\nend\n\ncompute i = $i + 1\nend\n\nend\n\nrun fizzBuzz\n");
+            break;
+        case "Recursion FizzBuzz":
+            setText("code_area", "var i = 1\n\nfunction fizzBuzz\ncompute mod3 = $i % 3\ncompute mod5 = $i % 5\ncompute mod15 = $i % 15\n\nif $mod15 !\necho FizzBuzz\nelse\nif $mod3 !\necho Fizz\nelse\nif $mod5 !\necho Buzz\nelse\necho $i\nend\nend\nend\n\nif $i < 100\ncompute i = $i + 1\nrun fizzBuzz\nend\nend\n\nrun fizzBuzz\n");
+            break;
+        case "Grid maker":
+            setText("code_area", "# 3x3 grid\n\nfunction turnR\nturnLeft\nturnLeft\nturnLeft\nend\n\nfunction turnAroundRight\nrun turnR\nmoveForward\nrun turnR\nend\n\nfunction move3\nmoveForward\nmoveForward\nmoveForward\nend\n\nfunction squiggle\nrun move3\nrun turnAroundRight\nrun move3\nturnLeft\nmoveForward\nturnLeft\nrun move3\nrun turnAroundRight\nrun move3\nend\n\nrun squiggle\nrun turnR\nrun squiggle\n\n# return to start\nrun turnR\nrun move3\nrun turnR\nrun move3\nrun turnR\n\n# full grid\nfunction drawCorner\nturnLeft\nmoveForward\nturnLeft\nmoveForward\nend\n\npenUp\nturnLeft\nturnLeft\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nturnLeft\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nturnLeft\npenDown\n\nvar c1 = 1\nwhile $c1 <= 32\nvar c2 = 1\nwhile $c2 <= $c1\nrun drawCorner\nturnLeft\nturnLeft\ncompute c2 = $c2 + 1\nend\nturnLeft\nturnLeft\nturnLeft\nvar c3 = 1\nwhile $c3 <= $c1\nmoveForward\ncompute c3 = $c3 + 1\nend\nturnLeft\nvar c4 = 1\nwhile $c4 <= $c1\nmoveForward\ncompute c4 = $c4 + 1\nend\nmoveForward\ncompute c1 = $c1 + 1\nend\n");
+    }
+});

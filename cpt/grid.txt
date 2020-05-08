@@ -1,0 +1,102 @@
+show
+
+# 3x3 grid
+
+function turnR
+turnLeft
+turnLeft
+turnLeft
+end
+
+function turnAroundRight
+run turnR
+moveForward
+run turnR
+end
+
+function move3
+moveForward
+moveForward
+moveForward
+end
+
+function squiggle
+run move3
+run turnAroundRight
+run move3
+turnLeft
+moveForward
+turnLeft
+run move3
+run turnAroundRight
+run move3
+end
+
+run squiggle
+run turnR
+run squiggle
+
+# return to start
+run turnR
+run move3
+run turnR
+run move3
+run turnR
+
+# full grid
+function drawCorner
+turnLeft
+moveForward
+turnLeft
+moveForward
+end
+
+penUp
+turnLeft
+turnLeft
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+turnLeft
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+moveForward
+turnLeft
+penDown
+
+var c1 = 1
+while $c1 <= 32
+var c2 = 1
+while $c2 <= $c1
+run drawCorner
+turnLeft
+turnLeft
+compute c2 = $c2 + 1
+end
+turnLeft
+turnLeft
+turnLeft
+var c3 = 1
+while $c3 <= $c1
+moveForward
+compute c3 = $c3 + 1
+end
+turnLeft
+var c4 = 1
+while $c4 <= $c1
+moveForward
+compute c4 = $c4 + 1
+end
+moveForward
+compute c1 = $c1 + 1
+end
