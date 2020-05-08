@@ -1,0 +1,33 @@
+var i = 1
+
+function fizzBuzz
+var notEchoed = 1
+compute mod3 = $i % 3
+compute mod5 = $i % 5
+compute mod15 = $i % 15
+compute divisible3 = $mod3 !
+compute divisible5 = $mod5 !
+compute divisible15 = $mod15 !
+
+if $divisible15 && $notEchoed
+echo FizzBuzz
+var notEchoed = 0
+end
+if $divisible3 && $notEchoed
+echo Fizz
+var notEchoed = 0
+end
+if $divisible5 && $notEchoed
+echo Buzz
+var notEchoed = 0
+end
+if $notEchoed == 1
+echo $i
+end
+if $i < 100
+compute i = $i + 1
+run fizzBuzz
+end
+end
+
+run fizzBuzz

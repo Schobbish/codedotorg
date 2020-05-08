@@ -1,0 +1,29 @@
+var i = 1
+
+function fizzBuzz
+
+while $i <= 100
+compute mod3 = $i % 3
+compute mod5 = $i % 5
+compute mod15 = $i % 15
+
+if $mod15 !
+echo FizzBuzz
+else
+if $mod3 !
+echo Fizz
+else
+if $mod5 !
+echo Buzz
+else
+echo $i
+end
+end
+end
+
+compute i = $i + 1
+end
+
+end
+
+run fizzBuzz
