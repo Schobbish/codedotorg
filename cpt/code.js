@@ -127,6 +127,10 @@ function exit(code) {
     // hide stop buttons
     hideElement("console_b_stop");
     hideElement("turtle_b_stop");
+    setStyle("console", "cursor: auto");
+    setStyle("console_t_title", "cursor: auto");
+    setStyle("turtle", "cursor: auto");
+    setStyle("turtle_t_title", "cursor: auto");
 }
 
 var delay = 1;
@@ -341,13 +345,16 @@ function runCode() {
     // show stop buttons
     showElement("console_b_stop");
     showElement("turtle_b_stop");
+    setStyle("console", "cursor: progress");
+    setStyle("console_t_title", "cursor: progress");
+    setStyle("turtle", "cursor: progress");
+    setStyle("turtle_t_title", "cursor: progress");
 
     // start the loop
     setTimeout(loopyFunction, delay);
 }
 
 function tabSwitcher(event) {
-    // exit();
     setScreen(event.targetId.split("_")[3]);
 }
 
@@ -355,11 +362,11 @@ function tabSwitcher(event) {
 var screens = ["start", "code", "console", "turtle", "docs"];
 for (var current = 0; current < screens.length; current++) {
     for (var destination = 0; destination < screens.length; destination++) {
-        // no buttons to start screen and no buttons to the same screen
-        if (screens[destination] !== "start" &&
-            screens[current] !== screens[destination])
-            onEvent(screens[current] + "_tabbar_b_" + screens[destination],
-                "click", tabSwitcher);
+        var buttonID = screens[current] + "_tabbar_b_" + screens[destination];
+        setStyle(buttonID, "cursor: pointer");
+        // no buttons to start screen
+        if (screens[destination] !== "start")
+            onEvent(buttonID, "click", tabSwitcher);
     }
 }
 
