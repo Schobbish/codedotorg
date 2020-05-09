@@ -104,7 +104,8 @@ function blockLineReader() {
                 nest--;
                 block.push(line);
             }
-        } else if (firstWord === "if" || firstWord === "function" || firstWord === "for" || firstWord === "while") {
+        } else if (firstWord === "if" || firstWord === "function" ||
+            firstWord === "for" || firstWord === "while") {
             nest++;
             block.push(line);
         } else if (firstWord === "EOF") {
@@ -225,7 +226,8 @@ function startIf(a, op, b) {
         } else if (firstWord === "else" && nest <= 0) {
             statement.falseBlock = blockLineReader();
             break;
-        } else if (firstWord === "if" || firstWord === "function" || firstWord === "for" || firstWord === "while") {
+        } else if (firstWord === "if" || firstWord === "function" ||
+            firstWord === "for" || firstWord === "while") {
             nest++;
             statement.trueBlock.push(line);
         } else if (firstWord === "EOF") {
@@ -275,17 +277,20 @@ function runFunction(name) {
     }
 }
 
-function startFor(variable, start, end, increment) {
+/* function startFor(variable, start, end, increment) {
     if (typeof increment === "undefined") increment = 1;
-}
+} */
 
 function startWhile(a, op, b) {
     var blockStartLine = currentLine - 1;
     var block = blockLineReader();
     var blockEndLine = currentLine;
-    // if condition is met splice in the code to run once and a copy of the whole block
+    // if condition is met splice the block and run once
+    // then splice the whole statement again (recursive in a way)
     if (compute(null, null, a, op, b)) {
-        Array.prototype.splice.apply(lines, [currentLine, 0].concat(block).concat(lines.slice(blockStartLine, blockEndLine)));
+        Array.prototype.splice.apply(
+            lines, [currentLine, 0].concat(block).concat(
+                lines.slice(blockStartLine, blockEndLine)));
     }
 }
 
@@ -351,8 +356,10 @@ var screens = ["start", "code", "console", "turtle", "docs"];
 for (var current = 0; current < screens.length; current++) {
     for (var destination = 0; destination < screens.length; destination++) {
         // no buttons to start screen and no buttons to the same screen
-        if (screens[destination] !== "start" && screens[current] !== screens[destination])
-            onEvent(screens[current] + "_tabbar_b_" + screens[destination], "click", tabSwitcher);
+        if (screens[destination] !== "start" &&
+            screens[current] !== screens[destination])
+            onEvent(screens[current] + "_tabbar_b_" + screens[destination],
+                "click", tabSwitcher);
     }
 }
 
@@ -374,16 +381,40 @@ onEvent("turtle_b_stop", "click", function () {
     exit();
 });
 
-// example codes
+// example programs
 onEvent("code_examples", "change", function () {
     switch (getText("code_examples")) {
         case "While FizzBuzz":
-            setText("code_area", "var i = 1\n\nfunction fizzBuzz\n\nwhile $i <= 100\ncompute mod3 = $i % 3\ncompute mod5 = $i % 5\ncompute mod15 = $i % 15\n\nif $mod15 !\necho FizzBuzz\nelse\nif $mod3 !\necho Fizz\nelse\nif $mod5 !\necho Buzz\nelse\necho $i\nend\nend\nend\n\ncompute i = $i + 1\nend\n\nend\n\nrun fizzBuzz\n");
+            setText("code_area", "var i = 1\n\nfunction fizzBuzz\
+\n\nwhile $i <= 100\ncompute mod3 = $i % 3\ncompute mod5 = $i % 5\
+\ncompute mod15 = $i % 15\n\nif $mod15 !\necho FizzBuzz\nelse\nif $mod3 !\
+\necho Fizz\nelse\nif $mod5 !\necho Buzz\nelse\necho $i\nend\nend\nend\
+\n\ncompute i = $i + 1\nend\n\nend\n\nrun fizzBuzz\n");
             break;
         case "Recursion FizzBuzz":
-            setText("code_area", "var i = 1\n\nfunction fizzBuzz\ncompute mod3 = $i % 3\ncompute mod5 = $i % 5\ncompute mod15 = $i % 15\n\nif $mod15 !\necho FizzBuzz\nelse\nif $mod3 !\necho Fizz\nelse\nif $mod5 !\necho Buzz\nelse\necho $i\nend\nend\nend\n\nif $i < 100\ncompute i = $i + 1\nrun fizzBuzz\nend\nend\n\nrun fizzBuzz\n");
+            setText("code_area", "var i = 1\n\nfunction fizzBuzz\
+\ncompute mod3 = $i % 3\ncompute mod5 = $i % 5\ncompute mod15 = $i % 15\
+\n\nif $mod15 !\necho FizzBuzz\nelse\nif $mod3 !\necho Fizz\nelse\nif $mod5 !\
+\necho Buzz\nelse\necho $i\nend\nend\nend\n\nif $i < 100\ncompute i = $i + 1\
+\nrun fizzBuzz\nend\nend\n\nrun fizzBuzz\n");
             break;
         case "Grid maker":
-            setText("code_area", "# 3x3 grid\n\nfunction turnR\nturnLeft\nturnLeft\nturnLeft\nend\n\nfunction turnAroundRight\nrun turnR\nmoveForward\nrun turnR\nend\n\nfunction move3\nmoveForward\nmoveForward\nmoveForward\nend\n\nfunction squiggle\nrun move3\nrun turnAroundRight\nrun move3\nturnLeft\nmoveForward\nturnLeft\nrun move3\nrun turnAroundRight\nrun move3\nend\n\nrun squiggle\nrun turnR\nrun squiggle\n\n# return to start\nrun turnR\nrun move3\nrun turnR\nrun move3\nrun turnR\n\n# full grid\nfunction drawCorner\nturnLeft\nmoveForward\nturnLeft\nmoveForward\nend\n\npenUp\nturnLeft\nturnLeft\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nturnLeft\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nturnLeft\npenDown\n\nvar c1 = 1\nwhile $c1 <= 32\nvar c2 = 1\nwhile $c2 <= $c1\nrun drawCorner\nturnLeft\nturnLeft\ncompute c2 = $c2 + 1\nend\nturnLeft\nturnLeft\nturnLeft\nvar c3 = 1\nwhile $c3 <= $c1\nmoveForward\ncompute c3 = $c3 + 1\nend\nturnLeft\nvar c4 = 1\nwhile $c4 <= $c1\nmoveForward\ncompute c4 = $c4 + 1\nend\nmoveForward\ncompute c1 = $c1 + 1\nend\n");
+            setText("code_area", "# 3x3 grid\n\nfunction turnR\nturnLeft\
+\nturnLeft\nturnLeft\nend\n\nfunction turnAroundRight\nrun turnR\nmoveForward\
+\nrun turnR\nend\n\nfunction move3\nmoveForward\nmoveForward\nmoveForward\nend\
+\n\nfunction squiggle\nrun move3\nrun turnAroundRight\nrun move3\nturnLeft\
+\nmoveForward\nturnLeft\nrun move3\nrun turnAroundRight\nrun move3\nend\
+\n\nrun squiggle\nrun turnR\nrun squiggle\n\n# return to start\nrun turnR\
+\nrun move3\nrun turnR\nrun move3\nrun turnR\n\n# full grid\
+\nfunction drawCorner\nturnLeft\nmoveForward\nturnLeft\nmoveForward\nend\
+\n\npenUp\nturnLeft\nturnLeft\nmoveForward\nmoveForward\nmoveForward\
+\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\
+\nturnLeft\nmoveForward\nmoveForward\nmoveForward\nmoveForward\nmoveForward\
+\nmoveForward\nmoveForward\nturnLeft\npenDown\n\nvar c1 = 1\nwhile $c1 <= 32\
+\nvar c2 = 1\nwhile $c2 <= $c1\nrun drawCorner\nturnLeft\nturnLeft\
+\ncompute c2 = $c2 + 1\nend\nturnLeft\nturnLeft\nturnLeft\nvar c3 = 1\
+\nwhile $c3 <= $c1\nmoveForward\ncompute c3 = $c3 + 1\nend\nturnLeft\
+\nvar c4 = 1\nwhile $c4 <= $c1\nmoveForward\ncompute c4 = $c4 + 1\nend\
+\nmoveForward\ncompute c1 = $c1 + 1\nend\n");
     }
 });
