@@ -15,9 +15,81 @@ penColor $2
 dot $1
 if $# == 3
 penColor $3
-compute tmp1 = $1 / 4
-dot $tmp1
+compute tempR = $1 / 4
+dot $tempR
 end
+compute tempDL = $1 * 2
+compute currentRowLength = $currentRowLength + $tempDL
+compute tempX = getX + $tempDL
+moveTo $tempX getY
 end
 
+function newRow
+compute tempDX = $currentRowLength * -1
+compute tempDY = $size * 2
+compute tempX = getX + $tempDX
+compute tempY = getY + $tempDY
+moveTo $tempX $tempY
+var currentRowLength = 0
+end
+
+show
+penUp
+moveTo 80 100
+
+# row 1
 run msDot $size $darkBeige $clue1
+run msDot $size $lightBeige $clue2
+run msDot $size $darkBeige $clue3
+run msDot $size $lightBeige $clue2
+run msDot $size $darkBeige $clue1
+run newRow
+
+# row 2
+run msDot $size $lightBeige $clue2
+run msDot $size $darkGreen $flagColor
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkGreen $flagColor
+run msDot $size $lightBeige $clue2
+run newRow
+
+# row 3
+run msDot $size $darkBeige $clue3
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkBeige $clue3
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkBeige $clue2
+run newRow
+
+# row 4
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkBeige $clue3
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkBeige $clue3
+run msDot $size $lightBeige $clue2
+run newRow
+
+# row 5
+run msDot $size $darkBeige $clue1
+run msDot $size $lightBeige $clue3
+run msDot $size $darkBeige $clue3
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkBeige $clue1
+run newRow
+
+# row 6
+run msDot $size $lightBeige
+run msDot $size $darkBeige $clue1
+run msDot $size $lightGreen $flagColor
+run msDot $size $darkBeige $clue2
+run msDot $size $lightBeige $clue1
+run newRow
+
+# row 7
+run msDot $size $darkBeige
+run msDot $size $lightBeige $clue1
+run msDot $size $darkBeige $clue1
+run msDot $size $lightBeige $clue1
+run msDot $size $darkBeige
+
+hide

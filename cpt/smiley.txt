@@ -1,0 +1,48 @@
+function drawSmiley
+penColor #000000
+dot $1
+
+compute tempR = $1 * 0.9
+if $# == 2
+penColor $2
+else
+penColor #f9db2c
+end
+dot $tempR
+
+compute tempW = $1 * 0.16
+compute tempR = $1 * 0.52
+penWidth $tempW
+penColor #000000
+penUp
+run move $tempR 0
+penDown
+turnTo 180
+arcRight 180 $tempR
+penUp
+run move $tempR 0
+
+compute tempDX = $1 * -0.28
+compute tempDY = $1 * -0.333
+compute tempR = $1 * 0.17
+run move $tempDX $tempDY
+penColor #000000
+dot $tempR
+
+compute tempDX = $tempDX * -2
+run move $tempDX 0
+dot $tempR
+
+compute tempDX = $tempDX / -2
+compute tempDY = $tempDY * -1
+run move $tempDX $tempDY
+end
+
+function move
+# builtin doesn't work right
+compute tempX = getX + $1
+compute tempY = getY + $2
+moveTo $tempX $tempY
+end
+
+run drawSmiley 50

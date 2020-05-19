@@ -1,8 +1,8 @@
+//https://studio.code.org/projects/applab/BOljhCcxJA0uHsCIj9X4Pd4BA9gGci5XB4F5WeCWJXI/view
 var code;
 var lines;
 var currentLine = 0;
 var names = {};
-var verbose = false;
 var builtins = {
     "moveForward": moveForward,
     "moveBackward": moveBackward,
@@ -37,12 +37,10 @@ var builtins = {
     "if": startIf,
     "function": startFunction,
     "run": runFunction,
-    "for": startFor,
-    "while": startWhile,
-    // no do while!!!!!!!!!!
+    // "for": startFor,
+    // "while": startWhile,
     "else": invalidElse,
     "end": invalidEnd,
-    "verbose": verbose,
 };
 
 function validateName(name) {
@@ -59,22 +57,22 @@ function validateName(name) {
 function readLine(line) {
     if (line === null) return false;
     var cmd = line.split(" ");
-    for (var word = 0; word < cmd.length; word++) {
+    for (var i = 0; i < cmd.length; i++) {
         // sub in variables
-        if (cmd[word] === "getX") {
-            cmd[word] = getX();
-        } else if (cmd[word] === "getY") {
-            cmd[word] = getY();
-        } else if (cmd[word] === "getDirection") {
-            cmd[word] = getDirection();
-        } else if (cmd[word][0] === "$") {
-            cmd[word] = names[cmd[word].slice(1)];
-        } else if (cmd[word].slice(0, 2) === "\\$") {
+        if (cmd[i] === "getX") {
+            cmd[i] = getX();
+        } else if (cmd[i] === "getY") {
+            cmd[i] = getY();
+        } else if (cmd[i] === "getDirection") {
+            cmd[i] = getDirection();
+        } else if (cmd[i][0] === "$") {
+            cmd[i] = names[cmd[i].slice(1)];
+        } else if (cmd[i].slice(0, 2) === "\\$") {
             // one escaped dollar sign
-            cmd[word] = cmd[word].slice(1);
+            cmd[i] = cmd[i].slice(1);
         }
     }
-    if (verbose) console.log("        run " + cmd.join(" ") + " #" + currentLine);
+    // console.log("                                    run " + cmd.join(" "));
     // run command
     if (!runCode) {
         return false;
@@ -93,7 +91,6 @@ function blockLineReader() {
     var nest = 0;
     while (true) {
         var line = lines[currentLine];
-        if (verbose) console.log("            read " + line + " #" + currentLine);
         // console.log([line, nest])
         var firstWord = line.split(" ")[0];
         currentLine++;
@@ -209,7 +206,7 @@ function startIf(a, op, b) {
     var nest = 0;
     while (true) {
         var line = lines[currentLine];
-        if (verbose) console.log("            read " + line + " #" + currentLine);
+        // console.log([line, nest])
         var firstWord = line.split(" ")[0];
         currentLine++;
         if (firstWord === "end") {
@@ -236,12 +233,12 @@ function startIf(a, op, b) {
 
     // then execute
     if (compute(null, null, a, op, b)) {
-        for (var line = 0; line < statement.trueBlock.length; line++) {
-            lines.splice(currentLine + line, 0, statement.trueBlock[line]);
+        for (var i = 0; i < statement.trueBlock.length; i++) {
+            lines.splice(currentLine + i, 0, statement.trueBlock[i]);
         }
     } else {
-        for (var line = 0; line < statement.falseBlock.length; line++) {
-            lines.splice(currentLine + line, 0, statement.falseBlock[line]);
+        for (var i = 0; i < statement.falseBlock.length; i++) {
+            lines.splice(currentLine + i, 0, statement.falseBlock[i]);
         }
     }
 }
@@ -274,20 +271,6 @@ function runFunction(name) {
     }
 }
 
-function startFor(variable, start, end, increment) {
-    if (typeof increment === "undefined") increment = 1;
-}
-
-function startWhile(a, op, b) {
-    var blockStartLine = currentLine - 1;
-    var block = blockLineReader();
-    var blockEndLine = currentLine;
-    // if condition is met splice in the code to run once and a copy of the whole block
-    if (compute(null, null, a, op, b)) {
-        Array.prototype.splice.apply(lines, [currentLine, 0].concat(block).concat(lines.slice(blockStartLine, blockEndLine)));
-    }
-}
-
 function invalidElse() {
     console.log("Error: unexpected else on line " + currentLine);
     exit(2);
@@ -298,10 +281,6 @@ function invalidEnd() {
     exit(2);
 }
 
-function verbose() {
-    verbose = !verbose;
-}
-
 function loopyFunction() {
     var line = lines[currentLine];
     currentLine++;
@@ -309,23 +288,8 @@ function loopyFunction() {
         setTimeout(loopyFunction, delay);
     }
 }
-
-function tabSwitcher(event) {
-    setScreen(event.targetId.split("_")[3]);
-}
-
-// make tab bar buttons
-var screens = ["start", "code", "console", "turtle", "docs"];
-for (var location = 0; location < screens.length; location++) {
-    for (var destination = 0; destination < screens.length; destination++) {
-        // no buttons to start screen and no buttons to the same screen
-        if (screens[destination] !== "start" && screens[location] !== screens[destination])
-            onEvent(screens[location] + "_tabbar_b_" + screens[destination], "click", tabSwitcher);
-    }
-}
-
 onEvent("run", "click", function () {
-    if (verbose) console.log("    running code");
+    console.log("                                  running code");
 
     // reset vars
     code = getText("code") + "\nEOF";
@@ -334,7 +298,6 @@ onEvent("run", "click", function () {
     names = {};
     runCode = true;
     delay = 1;
-    verbose = false;
 
     // reset turtle
     penDown();

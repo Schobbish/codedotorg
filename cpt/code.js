@@ -466,6 +466,55 @@ onEvent("code_examples", "change", function () {
 \nwhile $c3 <= $c1\nmoveForward\ncompute c3 = $c3 + 1\nend\nturnLeft\
 \nvar c4 = 1\nwhile $c4 <= $c1\nmoveForward\ncompute c4 = $c4 + 1\nend\
 \nmoveForward\ncompute c1 = $c1 + 1\nend\n");
+            break;
+        case "Smiley maker":
+            setText("code_area", "function drawSmiley\npenColor #000000\ndot $1\
+\n\ncompute tempR = $1 * 0.9\nif $# == 2\npenColor $2\nelse\npenColor #f9db2c\
+\nend\ndot $tempR\n\ncompute tempW = $1 * 0.16\ncompute tempR = $1 * 0.52\
+\npenWidth $tempW\npenColor #000000\npenUp\nrun move $tempR 0\npenDown\
+\nturnTo 180\narcRight 180 $tempR\npenUp\nrun move $tempR 0\
+\n\ncompute tempDX = $1 * -0.28\ncompute tempDY = $1 * -0.333\
+\ncompute tempR = $1 * 0.17\nrun move $tempDX $tempDY\npenColor #000000\
+\ndot $tempR\n\ncompute tempDX = $tempDX * -2\nrun move $tempDX 0\ndot $tempR\
+\n\ncompute tempDX = $tempDX / -2\ncompute tempDY = $tempDY * -1\
+\nrun move $tempDX $tempDY\nend\n\nfunction move\n# builtin doesn't work right\
+\ncompute tempX = getX + $1\ncompute tempY = getY + $2\nmoveTo $tempX $tempY\
+\nend\n\nrun drawSmiley 50\n");
+            break;
+        case "Minesweeper board":
+            setText("code_area", "var size = 20\nvar lightBeige = #e5c29f\
+\nvar darkBeige = #d7b899\nvar lightGreen = #aad751\nvar darkGreen = #a2d149\
+\nvar flagColor = #f23607\nvar clue1 = #0c72d7\nvar clue2 = #3a8f3d\
+\nvar clue3 = #d33a38\nvar clue6 = #0096a7\nvar currentRowLength = 0\
+\n\nfunction msDot\npenColor $2\ndot $1\nif $# == 3\npenColor $3\
+\ncompute tempR = $1 / 4\ndot $tempR\nend\ncompute tempDL = $1 * 2\
+\ncompute currentRowLength = $currentRowLength + $tempDL\
+\ncompute tempX = getX + $tempDL\nmoveTo $tempX getY\nend\n\nfunction newRow\
+\ncompute tempDX = $currentRowLength * -1\ncompute tempDY = $size * 2\
+\ncompute tempX = getX + $tempDX\ncompute tempY = getY + $tempDY\
+\nmoveTo $tempX $tempY\nvar currentRowLength = 0\nend\n\nshow\npenUp\
+\nmoveTo 80 100\n\n# row 1\nrun msDot $size $darkBeige $clue1\
+\nrun msDot $size $lightBeige $clue2\nrun msDot $size $darkBeige $clue3\
+\nrun msDot $size $lightBeige $clue2\nrun msDot $size $darkBeige $clue1\
+\nrun newRow\n\n# row 2\nrun msDot $size $lightBeige $clue2\
+\nrun msDot $size $darkGreen $flagColor\nrun msDot $size $lightGreen $flagColor\
+\nrun msDot $size $darkGreen $flagColor\nrun msDot $size $lightBeige $clue2\
+\nrun newRow\n\n# row 3\nrun msDot $size $darkBeige $clue3\
+\nrun msDot $size $lightGreen $flagColor\nrun msDot $size $darkBeige $clue3\
+\nrun msDot $size $lightGreen $flagColor\nrun msDot $size $darkBeige $clue2\
+\nrun newRow\n\n# row 4\nrun msDot $size $lightGreen $flagColor\
+\nrun msDot $size $darkBeige $clue3\nrun msDot $size $lightGreen $flagColor\
+\nrun msDot $size $darkBeige $clue3\nrun msDot $size $lightBeige $clue2\
+\nrun newRow\n\n# row 5\nrun msDot $size $darkBeige $clue1\
+\nrun msDot $size $lightBeige $clue3\nrun msDot $size $darkBeige $clue3\
+\nrun msDot $size $lightGreen $flagColor\nrun msDot $size $darkBeige $clue1\
+\nrun newRow\n\n# row 6\nrun msDot $size $lightBeige\
+\nrun msDot $size $darkBeige $clue1\nrun msDot $size $lightGreen $flagColor\
+\nrun msDot $size $darkBeige $clue2\nrun msDot $size $lightBeige $clue1\
+\nrun newRow\n\n# row 7\nrun msDot $size $darkBeige\
+\nrun msDot $size $lightBeige $clue1\nrun msDot $size $darkBeige $clue1\
+\nrun msDot $size $lightBeige $clue1\nrun msDot $size $darkBeige\n\nhide\n");
+            break;
     }
     setText("code_examples", "Load examples");
 });
