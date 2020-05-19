@@ -31,6 +31,7 @@ var builtins = {
     "speed": speed,
     "var": declareVar,
     "randomVar": randVar,
+    "prompt": promptVar,
     "echo": echo,
     "#": comment,
     "": comment,
@@ -151,6 +152,16 @@ function randVar(name, equals, low, high) {
         } else {
             return randomNumber(low, high);
         }
+    }
+}
+
+function promptVar(name, promptText) {
+    if (validateName(name)) {
+        if (!promptText) promptText = name + "=?";
+        names[name] = prompt(promptText);
+
+        // exit if no input
+        if (!names[name]) exit();
     }
 }
 
