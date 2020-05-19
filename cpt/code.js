@@ -1,9 +1,21 @@
+/*
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND yadda yadda yadda
+*/
+
+/** Stuff in element code_area */
 var code;
+/** Array of `code` split into lines */
 var lines;
+/** Really this is actually the next line number to execute */
 var currentLine = 0;
+/** Namespace for user-defined functions, variables */
 var names = {};
+/** If false code should stop running asap (but it isn't immediate) */
 var continueRunningCode = true;
 var verbose = false;
+/** Delay given to loopyFunction's setTimeout */
+var delay = 1;
+/** Stuff the user can run */
 var builtins = {
     "moveForward": moveForward,
     "moveBackward": moveBackward,
@@ -47,6 +59,7 @@ var builtins = {
     "verbose": toggleVerbosity,
 };
 
+/** Checks if variable name is not a number or undefined. null is okay though */
 function validateName(name) {
     if (name === null) return true;
     if (!isNaN(name) || name === undefined) {
@@ -58,6 +71,12 @@ function validateName(name) {
     }
 }
 
+/**
+ * Magical line reader and executor. Subs in variables and getters.
+ * Does not increment currentLine
+ * @returns true if continueRunningcode is true and command exists,
+ *  but not necessarily if the line executed successfully
+ */
 function readLine(line) {
     if (line === null) return false;
     var cmd = line.split(" ");
@@ -90,6 +109,7 @@ function readLine(line) {
     }
 }
 
+/** Magical function which @returns the next block of code, not including end */
 function blockLineReader() {
     var block = [];
     var nest = 0;
@@ -120,8 +140,12 @@ function blockLineReader() {
     return block;
 }
 
+/**
+ * Sets continueRunningCode to false and does some cleanup
+ * @param {*} [code] Echos this exit code if present
+ */
 function exit(code) {
-    if (code) echo(code);
+    if (code) echo("Process terminated with exit code " + code);
     // stop code asap
     continueRunningCode = false;
 
@@ -134,17 +158,19 @@ function exit(code) {
     setStyle("turtle_t_title", "cursor: auto");
 }
 
-var delay = 1;
+/** Set delay where 100 is 1 (ms) and 0 is 1001 */
 function speed(value) {
     delay = 1001 - value * 10;
 }
 
+/** Set name to value in names. equals is irrelevant but it does look better */
 function declareVar(name, equals, value) {
     if (validateName(name)) {
         names[name] = value;
     }
 }
 
+/** Set name to random value between low and high (inclusive) */
 function randVar(name, equals, low, high) {
     if (validateName(name)) {
         if (name) {
@@ -155,6 +181,10 @@ function randVar(name, equals, low, high) {
     }
 }
 
+/**
+ * Prompt user to set name. promptText is optional.
+ * Exits if user doesn't input
+ */
 function promptVar(name, promptText) {
     if (validateName(name)) {
         if (!promptText) promptText = name + "=?";
@@ -165,16 +195,17 @@ function promptVar(name, promptText) {
     }
 }
 
+/** Echos whatever arguments it's given separated by spaces */
 function echo() {
     // https://stackoverflow.com/a/6396066 alt for ...args
     var args = Array.prototype.slice.call(arguments, 0);
     setText("console_area", getText("console_area") + args.join(" ") + "\n");
 }
 
-function comment() {
-    // does nothing
-}
+/** Does nothing */
+function comment() { }
 
+/** Do some calculation. equals is irrelevant as usual */
 function compute(name, equals, a, op, b) {
     if (validateName(name)) {
         // check if a and b are numbers and convert if so
@@ -224,7 +255,7 @@ function startIf(a, op, b) {
         trueBlock: [],
         falseBlock: []
     };
-    // modified blockLineReader() because of the else statement
+    // using modified blockLineReader() because of the else statement
     var nest = 0;
     while (true) {
         var line = lines[currentLine];
@@ -401,6 +432,7 @@ onEvent("turtle_b_stop", "click", function () {
 
 // example programs
 onEvent("code_examples", "change", function () {
+    // wish I could use base64 but not supported in app lab
     switch (getText("code_examples")) {
         case "While FizzBuzz":
             setText("code_area", "var i = 1\n\nfunction fizzBuzz\
@@ -435,4 +467,5 @@ onEvent("code_examples", "change", function () {
 \nvar c4 = 1\nwhile $c4 <= $c1\nmoveForward\ncompute c4 = $c4 + 1\nend\
 \nmoveForward\ncompute c1 = $c1 + 1\nend\n");
     }
+    setText("code_examples", "Load examples");
 });
