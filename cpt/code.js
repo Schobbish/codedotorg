@@ -140,71 +140,6 @@ function blockLineReader() {
     return block;
 }
 
-/**
- * Sets continueRunningCode to false and does some cleanup
- * @param {*} [code] Echos this exit code if present
- */
-function exit(code) {
-    if (code) echo("Process terminated with exit code " + code);
-    // stop code asap
-    continueRunningCode = false;
-
-    // hide stop buttons
-    hideElement("console_b_stop");
-    hideElement("turtle_b_stop");
-    setStyle("console", "cursor: auto");
-    setStyle("console_t_title", "cursor: auto");
-    setStyle("turtle", "cursor: auto");
-    setStyle("turtle_t_title", "cursor: auto");
-}
-
-/** Set delay where 100 is 1 (ms) and 0 is 1001 */
-function speed(value) {
-    delay = 1001 - value * 10;
-}
-
-/** Set name to value in names. equals is irrelevant but it does look better */
-function declareVar(name, equals, value) {
-    if (validateName(name)) {
-        names[name] = value;
-    }
-}
-
-/** Set name to random value between low and high (inclusive) */
-function randVar(name, equals, low, high) {
-    if (validateName(name)) {
-        if (name) {
-            names[name] = randomNumber(low, high);
-        } else {
-            return randomNumber(low, high);
-        }
-    }
-}
-
-/**
- * Prompt user to set name. promptText is optional.
- * Exits if user doesn't input
- */
-function promptVar(name, promptText) {
-    if (validateName(name)) {
-        if (!promptText) promptText = name + "=?";
-        names[name] = prompt(promptText);
-
-        // exit if no input
-        if (!names[name]) exit();
-    }
-}
-
-/** Echos whatever arguments it's given separated by spaces */
-function echo() {
-    // https://stackoverflow.com/a/6396066 alt for ...args
-    var args = Array.prototype.slice.call(arguments, 0);
-    setText("console_area", getText("console_area") + args.join(" ") + "\n");
-}
-
-/** Does nothing */
-function comment() { }
-
 /** Do some calculation. equals is irrelevant as usual */
 function compute(name, equals, a, op, b) {
     if (validateName(name)) {
@@ -246,6 +181,19 @@ function compute(name, equals, a, op, b) {
         } else {
             return ans;
         }
+    }
+}
+
+function startWhile(a, op, b) {
+    var blockStartLine = currentLine - 1;
+    var block = blockLineReader();
+    var blockEndLine = currentLine;
+    // if condition is met splice the block and run once
+    // then splice the whole statement again (recursive in a way)
+    if (compute(null, null, a, op, b)) {
+        Array.prototype.splice.apply(
+            lines, [currentLine, 0].concat(block).concat(
+                lines.slice(blockStartLine, blockEndLine)));
     }
 }
 
@@ -323,22 +271,74 @@ function runFunction(name) {
     }
 }
 
+/**
+ * Sets continueRunningCode to false and does some cleanup
+ * @param {*} [code] Echos this exit code if present
+ */
+function exit(code) {
+    if (code) echo("Process terminated with exit code " + code);
+    // stop code asap
+    continueRunningCode = false;
+
+    // hide stop buttons
+    hideElement("console_b_stop");
+    hideElement("turtle_b_stop");
+    setStyle("console", "cursor: auto");
+    setStyle("console_t_title", "cursor: auto");
+    setStyle("turtle", "cursor: auto");
+    setStyle("turtle_t_title", "cursor: auto");
+}
+
+/** Set delay where 100 is 1 (ms) and 0 is 1001 */
+function speed(value) {
+    delay = 1001 - value * 10;
+}
+
+/** Set name to value in names. equals is irrelevant but it does look better */
+function declareVar(name, equals, value) {
+    if (validateName(name)) {
+        names[name] = value;
+    }
+}
+
+/** Set name to random value between low and high (inclusive) */
+function randVar(name, equals, low, high) {
+    if (validateName(name)) {
+        if (name) {
+            names[name] = randomNumber(low, high);
+        } else {
+            return randomNumber(low, high);
+        }
+    }
+}
+
+/**
+ * Prompt user to set name. promptText is optional.
+ * Exits if user doesn't input
+ */
+function promptVar(name, promptText) {
+    if (validateName(name)) {
+        if (!promptText) promptText = name + "=?";
+        names[name] = prompt(promptText);
+
+        // exit if no input
+        if (!names[name]) exit();
+    }
+}
+
+/** Echos whatever arguments it's given separated by spaces */
+function echo() {
+    // https://stackoverflow.com/a/6396066 alt for ...args
+    var args = Array.prototype.slice.call(arguments, 0);
+    setText("console_area", getText("console_area") + args.join(" ") + "\n");
+}
+
+/** Does nothing */
+function comment() { }
+
 /* function startFor(variable, start, end, increment) {
     if (typeof increment === "undefined") increment = 1;
 } */
-
-function startWhile(a, op, b) {
-    var blockStartLine = currentLine - 1;
-    var block = blockLineReader();
-    var blockEndLine = currentLine;
-    // if condition is met splice the block and run once
-    // then splice the whole statement again (recursive in a way)
-    if (compute(null, null, a, op, b)) {
-        Array.prototype.splice.apply(
-            lines, [currentLine, 0].concat(block).concat(
-                lines.slice(blockStartLine, blockEndLine)));
-    }
-}
 
 function invalidElse() {
     echo("Error: unexpected else on line " + currentLine);
