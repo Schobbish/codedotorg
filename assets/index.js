@@ -1,4 +1,6 @@
 $.ajaxSetup({ cache: false });
+// check out this project too
+// https://studio.code.org/projects/applab/BOljhCcxJA0uHsCIj9X4Pd4BA9gGci5XB4F5WeCWJXI/view
 
 /**
  * Convert stylized size to actual number.
@@ -46,7 +48,7 @@ $.getJSON("assets/projects.json", function (projects) {
 
         // handle sort settings and change links
         // N for Name; M for last Modified; S for Size
-        switch (params[0] ? params[0].split("=")[1] : "N") {
+        switch (params[0] ? params[0].split("=")[1] : "M") {
             case "M":
                 sortedProjectNames = Object.keys(projects).sort(function (a, b) {
                     const dateA = projects[a].modified;

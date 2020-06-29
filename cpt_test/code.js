@@ -1,4 +1,3 @@
-//https://studio.code.org/projects/applab/BOljhCcxJA0uHsCIj9X4Pd4BA9gGci5XB4F5WeCWJXI/view
 var code;
 var lines;
 var currentLine = 0;
